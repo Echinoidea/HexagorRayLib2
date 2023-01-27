@@ -4,16 +4,19 @@
 #include <raylib.h>
 
 struct Board {
-    static const int ROWS = 10;
-    static const int COLUMNS = 10;
+    const static int ROWS = 10;
+    const static int COLUMNS = 5;
 
     int mountainCount = 0;
     int villageCount = 0;
 
     Hex hexBoard[ROWS][COLUMNS];
 
+    //Board(int rows_, int columns_) : ROWS(rows_), COLUMNS(columns_) {}
+
     Board() {}
 
+    /// @brief Fill the board with empty hexes.
     void fillBoard() {
         for (int r = 0; r < ROWS; r++) {
             for (int q = 0; q < COLUMNS; q++) {
@@ -23,6 +26,9 @@ struct Board {
         }
     }
 
+    /// @brief Add features to random hexes.
+    /// @param mountainCount_ Number of mountains to add to the board.
+    /// @param villageCount_ Number of villages to add to the board.
     void addFeatures(int mountainCount_, int villageCount_) {
         for (int i = 0; i < ROWS * COLUMNS; i++) {
             int mOrV = GetRandomValue(0, 1);
@@ -45,7 +51,7 @@ struct Board {
 
     /// @brief Get the adjacent 6 Hexes based on the offset coordinate design. See reference image.
     /// @param target The Hex to get the adjacent Hexes of.
-    /// @return Pointers to the 6 Hexes adjacent to target.
+    /// @return A vector containing the 6 Hexes adjacent to target.
     std::vector<Hex> getAdjacents(Hex target) {
         std::vector<Hex> adjacents;
 
@@ -76,5 +82,13 @@ struct Board {
             printf("[%d, %d]", adjacents.at(i).r, adjacents.at(i).q);
         }
         return adjacents;
+    }
+
+    int getIndexFromHex() {
+        return 0;
+    }
+
+    Hex getHexFromIndex(int row, int col) {
+        return Hex();
     }
 };
