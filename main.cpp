@@ -1,6 +1,7 @@
 #include <iostream>
 #include <math.h>
 #include <raylib.h>
+#include <vector>
 #include <board.cpp>
 
 using namespace std;
@@ -9,32 +10,52 @@ using namespace std;
 #define HEIGHT 980
 #define TITLE "HexGrid"
 
+#define HEX_RADIUS 50
+
 #define COLOR_BLACK (Color) {19, 19, 19, 255}
 #define COLOR_WHITE (Color) {236, 236, 236, 255}
 #define COLOR_RED (Color) {229, 78, 48, 255}
 #define COLOR_GREEN (Color) {100, 160, 60, 255}
 #define COLOR_BLUE (Color) {55, 107, 186, 255}
 
-Vector2 hexToDrawPosition(Hex hex, Vector2 offset, Vector2 boardHexRadius) {
-    float verticalOffset = (sin(PI/3) * boardHexRadius.x);
+//Vector2 hexToDrawPosition(Hex hex, Vector2 offset, Vector2 boardHexRadius) {
+    //float verticalOffset = (sin(PI/3) * boardHexRadius.x);
 
-    int hexGridOffset = (hex.r % 2 != 0) ? 0 : 75;
+    //int hexGridOffset = (hex.r % 2 != 0) ? 0 : 75;
 
-    return (Vector2) {
+    /* return (Vector2) {
         .x = offset.x + hexGridOffset + (float)(hex.q) * (boardHexRadius.x * 3),
         .y = offset.y + (float)(hex.r) * verticalOffset
+    }; */
+//}
+
+/*Vector2 hexToDrawVector(Hex hex) {
+
+}*/
+
+Vector2 hexToDrawPosition(Hex hex, Vector2 offset) {
+    float verticalOffset = (sin(PI/3) * HEX_RADIUS);
+
+    return (Vector2) {
+        .x = offset.x + ((verticalOffset) * hex.r) + (float)(hex.q) * (cos(PI/6) * 100),
+        .y = offset.y + (float)(hex.r) * 75
     };
 }
 
-int main () {
+void drawBoardRhombus(Board board) {
+    for (int r = 0; r < board.N; r++) {
+        for (int q = 0; q < board.N; q++) {
+            DrawPoly(hexToDrawPosition(board.hexBoard[r][q], (Vector2) {100, 100}), 6, 50, 0, COLOR_BLUE);
+            DrawPolyLines(hexToDrawPosition(board.hexBoard[r][q], (Vector2) {100, 100}), 6, 50, 0, COLOR_BLACK);
+        }
+    }
+}
 
-    Board board = Board();
+int main () {
+    /*
+    //Board board = Board();
     board.fillBoard();
     board.addFeatures(5, 5);
-
-    Hex h1 = Hex(0, 0);
-    Vector2 p = hexToDrawPosition(h1, (Vector2) {100, 100}, (Vector2) {100, 100});
-    cout << " ++++++ " << p.x << " " << p.y << endl;
 
     InitWindow(WIDTH, HEIGHT, "My first RAYLIB program!");
     SetTargetFPS(60);
@@ -51,28 +72,6 @@ int main () {
             for (int q = 0; q < 10; q++) {
                 DrawPoly(hexToDrawPosition(board.hexBoard[r][q], originVector, (Vector2) {50, 50}), 6, 50, 30, BLUE);
                 DrawPolyLines(hexToDrawPosition(board.hexBoard[r][q], originVector, (Vector2) {50, 50}), 6, 50, 30, BLACK);
-//                 if (r % 2 != 0) {
-                    
-//                     
-//                     /* DrawPoly((Vector2) {originVector.x + (q * 150), originVector.y + r * verticalOffset}, 
-//                     6, hexRadius, 30, COLOR_BLUE);
-//                     DrawPolyLines((Vector2) {originVector.x + (q * 150), originVector.y + r * verticalOffset}, 
-//                     6, hexRadius, 30, COLOR_BLACK);
-//  */
-//                 }
-//                 else {
-                    
-//                     // DrawPoly((Vector2) {originVector.x + 75 + (q * 150), originVector.y + r * verticalOffset}, 
-//                     // 6, hexRadius, 30, COLOR_BLUE);
-//                     // DrawPolyLines((Vector2) {originVector.x + 75 + (q * 150), originVector.y + r * verticalOffset}, 
-//                     // 6, hexRadius, 30, COLOR_BLACK);
-//                 }
-//                 if (r == 0 && q == 0) {
-//                     // DrawPoly((Vector2) {originVector.x + 75 + (q * 150), originVector.y + r * verticalOffset}, 
-//                     // 6, hexRadius, 30, COLOR_RED);
-//                     // DrawPolyLines((Vector2) {originVector.x + 75 + (q * 150), originVector.y + r * verticalOffset}, 
-//                     // 6, hexRadius, 30, COLOR_BLACK);
-//                 }
             }
             
         }
@@ -83,6 +82,45 @@ int main () {
     }
 
     CloseWindow();
+    */
+
+    InitWindow(WIDTH, HEIGHT, "Hexes");
+    SetTargetFPS(60);
+
+    Board board = Board();
+
+    // Fuck it. Doing rhombus map instead of hexagonal map
+    for (int r = 0; r < board.N; r++) {
+        for (int q = 0; q < board.N; q++) {
+            int s = (q * -1) - r;
+
+            board.hexBoard[r][q] = Hex(q, r, s);
+            printf("(%d, %d, %d)\n", q, r, s);
+            
+        }
+    }
+
+    
+    while (WindowShouldClose() == false) {
+        BeginDrawing();
+
+        ClearBackground(COLOR_WHITE);
+
+        
+        for (int r = 0; r < board.N; r++) {
+            for (int q = 0; q < board.N; q++) {
+                DrawPoly(hexToDrawPosition(board.hexBoard[r][q], (Vector2) {100, 100}), 6, HEX_RADIUS, 0, COLOR_BLUE);
+                DrawPolyLines(hexToDrawPosition(board.hexBoard[r][q], (Vector2) {100, 100}), 6, HEX_RADIUS, 0, COLOR_BLACK);
+            }
+        }
+
+        EndDrawing();
+    }
+
+    
+
+    CloseWindow();
+
     return 0;
 }
 /**

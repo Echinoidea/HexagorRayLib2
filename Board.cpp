@@ -1,9 +1,61 @@
 #include <iostream>
 #include <Hex.cpp>
+#include <Layout.cpp>
 #include <vector>
 #include <raylib.h>
 
 struct Board {
+
+    const static int N = 11;
+
+    Hex hexBoard[N][N];
+
+    Board() {}
+
+    Vector2 hexToPixel(Layout layout, Hex hex) {
+        const Orientation& m = layout.orientation;
+
+        double x = (layoutPointy.f0 * hex.index.x + layoutPointy.f1 * hex.index.y) * layout.size.x;
+        double y = (layoutPointy.f2 * hex.index.x + layoutPointy.f3 * hex.index.y) * layout.size.y;
+
+        return (Vector2) {x + layout.origin.x, y + layout.origin.y};
+    }
+
+    Hex pixelToHex(Layout layout, Vector2 point) {
+        const Orientation& m = layout.orientation;
+        Vector2 pt = (Vector2) {(point.x - layout.origin.x) / layout.size.x, (point.y - layout.origin.y) / layout.size.y};
+
+        double x = (m.b0 * pt.x + m.b1 * pt.y);
+        double y = (m.b2 * pt.x + m.b2 * pt.y);
+
+        //return Hex((Vector3) {x, y, (-x - y)});
+        return Hex(x, y, (-x - y));
+    }
+
+    Vector2 hexCornerOffset(Layout layout, int corner) {
+        Vector2 size = layout.size;
+
+        double angle = 2.0 * PI * (layout.orientation.startAngle + corner) / 6;
+
+        return (Vector2) {size.x * cos(angle), size.y * sin(angle)};
+    }
+
+    std::vector<Vector2> polygonCorners(Layout layout, Hex hex) {
+        std::vector<Vector2> corners = {};
+
+        Vector2 center = hexToPixel(layout, hex);
+
+        for (int i = 0; i < 6; i++) {
+            Vector2 offset = hexCornerOffset(layout, i);
+            corners.push_back((Vector2) {center.x + offset.x, center.y + offset.y});
+        }
+
+        return corners;
+    }
+};
+
+
+/* struct Board {
     const static int ROWS = 10;
     const static int COLUMNS = 5;
 
@@ -91,4 +143,4 @@ struct Board {
     Hex getHexFromIndex(int row, int col) {
         return Hex();
     }
-};
+}; */
