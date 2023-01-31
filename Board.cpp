@@ -3,6 +3,9 @@
 #include <Layout.cpp>
 #include <vector>
 #include <raylib.h>
+#include <math.h>
+
+#define HEX_RADIUS 50
 
 struct Board {
 
@@ -12,15 +15,81 @@ struct Board {
 
     Board() {}
 
-    Vector2 hexToPixel(Layout layout, Hex hex) {
-        const Orientation& m = layout.orientation;
-
-        double x = (layoutPointy.f0 * hex.index.x + layoutPointy.f1 * hex.index.y) * layout.size.x;
-        double y = (layoutPointy.f2 * hex.index.x + layoutPointy.f3 * hex.index.y) * layout.size.y;
-
-        return (Vector2) {x + layout.origin.x, y + layout.origin.y};
+    float calcDistance(Vector2 a, Vector2 b) {
+        return sqrt(pow((b.x - a.x), 2) + pow((b.y - a.y), 2));
     }
 
+    Vector2 getHexFromPixel(Vector2 point, Vector2 offset) {
+        Vector2 mousePosition = GetMousePosition();
+
+        float horizontalOffset = (sin(PI/3) * 50);
+        int verticalOffset = 75;
+
+        std::vector<Vector2> circles;
+
+        for (int r = 0; r < N; r++) {
+            for (int q = 0; q < N; q++) {
+                circles.push_back((Vector2) {
+                    .x = offset.x + (horizontalOffset * r) + (float)(q) * (horizontalOffset * 2),//(cos(PI/6) * 100),
+                    .y = offset.y + (float)(r) * verticalOffset
+                });
+            }
+        }
+
+        std::cout << "Click position: " << mousePosition.x << ", " << mousePosition.y << std::endl;
+
+        Vector2 closestCircle;
+
+        // Calculate distance from mousePosition to each Hex. Find least distance. If distance < HEX_RADIUS, then it is clicking that circle
+
+        float closestDistance = INT_MAX;
+        float distance;
+
+        std::vector<Vector2> closeCircles;
+
+        for (unsigned i = 0; i < circles.size(); i++) {
+            distance = calcDistance(mousePosition, circles.at(i));
+            //std::cout << "Distance between click and (" << circles.at(i).x << ", " << circles.at(i).y << "): " << distance << std::endl;
+            if (distance < closestDistance) {
+                closestDistance = distance;
+                if (closestDistance <= HEX_RADIUS) {
+                    closestCircle = circles.at(i);
+                }
+            }
+        }
+        
+        std::cout << "Closest circle: " << closestCircle.x << ", " << closestCircle.y << std::endl;
+
+        /*
+        .x = offset.x + (horizontalOffset * hex.r) + (float)(hex.q) * (horizontalOffset * 2), //(cos(PI/6) * 100),
+        .y = offset.y + (float)(hex.r) * verticalOffset
+        */
+
+        // Use the formulas from main "hexToDrawPosition" to solve for r and q rather than x and y
+
+        float r = ((closestCircle.y / verticalOffset) - (offset.y / verticalOffset));
+        float q = ((closestCircle.x / (2 * horizontalOffset)) - (offset.x / (2 * horizontalOffset)) - (r / 2));
+
+        printf("NEW : %d, %d\n", q, r);
+
+        return (Vector2) {q, r};
+    }
+
+    Vector2 hexToPixel(Hex hex, Vector2 offset) {
+        float horizontalOffset = (sin(PI/3) * HEX_RADIUS);
+        int verticalOffset = 75;
+
+        return (Vector2) {
+            .x = offset.x + (horizontalOffset * hex.r) + (float)(hex.q) * (horizontalOffset * 2),//(cos(PI/6) * 100),
+            .y = offset.y + (float)(hex.r) * verticalOffset
+        };
+    }
+
+    
+
+
+
+    /*
     Hex pixelToHex(Layout layout, Vector2 point) {
         const Orientation& m = layout.orientation;
         Vector2 pt = (Vector2) {(point.x - layout.origin.x) / layout.size.x, (point.y - layout.origin.y) / layout.size.y};
@@ -30,9 +99,9 @@ struct Board {
 
         //return Hex((Vector3) {x, y, (-x - y)});
         return Hex(x, y, (-x - y));
-    }
+    }*/
 
-    Vector2 hexCornerOffset(Layout layout, int corner) {
+    /*Vector2 hexCornerOffset(Layout layout, int corner) {
         Vector2 size = layout.size;
 
         double angle = 2.0 * PI * (layout.orientation.startAngle + corner) / 6;
@@ -51,7 +120,7 @@ struct Board {
         }
 
         return corners;
-    }
+    }*/
 };
 
 

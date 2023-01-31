@@ -30,7 +30,7 @@ struct Hex{
     //Hex* adjacents;
 
     //int radius = 50;
-    //Color color = (Color) {55, 107, 186, 255};
+    Color color = (Color) {55, 107, 186, 255};
 
     //HexClaimState claimState = HCS_UNCLAIMED;
     //HexFeatureState featureState = HFS_EMPTY;
@@ -43,6 +43,12 @@ struct Hex{
     //}
 
     Hex(Vector3 index_): index(index_) {}
+
+    Hex(Vector2 index_) {
+        this->index.x = index_.x;
+        this->index.y = index_.y;
+        this->index.z = (index_.x * -1) - index_.y;
+    }
     
     Hex(int q_, int r_, int s_): q(q_), r(r_), s(s_) {}
 

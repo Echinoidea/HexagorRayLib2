@@ -18,35 +18,24 @@ using namespace std;
 #define COLOR_GREEN (Color) {100, 160, 60, 255}
 #define COLOR_BLUE (Color) {55, 107, 186, 255}
 
-//Vector2 hexToDrawPosition(Hex hex, Vector2 offset, Vector2 boardHexRadius) {
-    //float verticalOffset = (sin(PI/3) * boardHexRadius.x);
-
-    //int hexGridOffset = (hex.r % 2 != 0) ? 0 : 75;
-
-    /* return (Vector2) {
-        .x = offset.x + hexGridOffset + (float)(hex.q) * (boardHexRadius.x * 3),
-        .y = offset.y + (float)(hex.r) * verticalOffset
-    }; */
-//}
-
-/*Vector2 hexToDrawVector(Hex hex) {
-
-}*/
-
 Vector2 hexToDrawPosition(Hex hex, Vector2 offset) {
-    float verticalOffset = (sin(PI/3) * HEX_RADIUS);
+    float horizontalOffset = (sin(PI/3) * HEX_RADIUS);
+    int verticalOffset = 75;
 
     return (Vector2) {
-        .x = offset.x + ((verticalOffset) * hex.r) + (float)(hex.q) * (cos(PI/6) * 100),
-        .y = offset.y + (float)(hex.r) * 75
+        .x = offset.x + (horizontalOffset * hex.r) + (float)(hex.q) * (horizontalOffset * 2),//(cos(PI/6) * 100),
+        .y = offset.y + (float)(hex.r) * verticalOffset
     };
 }
+
+
 
 void drawBoardRhombus(Board board) {
     for (int r = 0; r < board.N; r++) {
         for (int q = 0; q < board.N; q++) {
-            DrawPoly(hexToDrawPosition(board.hexBoard[r][q], (Vector2) {100, 100}), 6, 50, 0, COLOR_BLUE);
+            DrawPoly(hexToDrawPosition(board.hexBoard[r][q], (Vector2) {100, 100}), 6, 50, 0, board.hexBoard[r][q].color);
             DrawPolyLines(hexToDrawPosition(board.hexBoard[r][q], (Vector2) {100, 100}), 6, 50, 0, COLOR_BLACK);
+            DrawCircleLines(hexToDrawPosition(board.hexBoard[r][q], (Vector2) {100, 100}).x, hexToDrawPosition(board.hexBoard[r][q], (Vector2) {100, 100}).y, (cos(PI/6) * 50), COLOR_WHITE);
         }
     }
 }
@@ -55,39 +44,15 @@ int main () {
     /*
     //Board board = Board();
     board.fillBoard();
-    board.addFeatures(5, 5);
-
-    InitWindow(WIDTH, HEIGHT, "My first RAYLIB program!");
-    SetTargetFPS(60);
-
-    const int hexRadius = 50;
-    const Vector2 originVector = (Vector2) {100, 50};
-    
-
-    while (WindowShouldClose() == false){
-        BeginDrawing();
-        ClearBackground(COLOR_WHITE);
-
-        for (int r = 0; r < 10; r++) {
-            for (int q = 0; q < 10; q++) {
-                DrawPoly(hexToDrawPosition(board.hexBoard[r][q], originVector, (Vector2) {50, 50}), 6, 50, 30, BLUE);
-                DrawPolyLines(hexToDrawPosition(board.hexBoard[r][q], originVector, (Vector2) {50, 50}), 6, 50, 30, BLACK);
-            }
-            
-        }
-        
-
-
-        EndDrawing();
-    }
-
-    CloseWindow();
-    */
+    board.addFeatures(5, 5); */
 
     InitWindow(WIDTH, HEIGHT, "Hexes");
     SetTargetFPS(60);
 
     Board board = Board();
+    Layout layout = Layout(layoutPointy, (Vector2) {10, 10}, (Vector2) {100, 100});
+
+
 
     // Fuck it. Doing rhombus map instead of hexagonal map
     for (int r = 0; r < board.N; r++) {
@@ -95,23 +60,32 @@ int main () {
             int s = (q * -1) - r;
 
             board.hexBoard[r][q] = Hex(q, r, s);
-            printf("(%d, %d, %d)\n", q, r, s);
+            //printf("(%d, %d, %d)\n", q, r, s);
             
         }
     }
 
+    //printf("%d, %d\n", board.hexToPixel(layout, board.hexBoard[0][0]).x, board.hexToPixel(layout, board.hexBoard[0][0]).y);
     
+    //Vector2 p;
+    //board.pixelToHex(layout, (Vector2) {100, 100});
+
+    //printf("Hex: %d, %d", p.x, p.y);
+
+    // TODO: Create colliders on hexes, have an invisible object follow mouse, on click and collision, do stuff
+
     while (WindowShouldClose() == false) {
         BeginDrawing();
 
         ClearBackground(COLOR_WHITE);
+        drawBoardRhombus(board);
 
-        
-        for (int r = 0; r < board.N; r++) {
-            for (int q = 0; q < board.N; q++) {
-                DrawPoly(hexToDrawPosition(board.hexBoard[r][q], (Vector2) {100, 100}), 6, HEX_RADIUS, 0, COLOR_BLUE);
-                DrawPolyLines(hexToDrawPosition(board.hexBoard[r][q], (Vector2) {100, 100}), 6, HEX_RADIUS, 0, COLOR_BLACK);
-            }
+        if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT)) {
+            
+            Vector2 target = board.getHexFromPixel(GetMousePosition(), (Vector2) {100, 100});
+            cout << target.x << ", " << target.y << endl;
+
+            board.hexBoard[(int)round(target.y)][(int)round(target.x)].color = COLOR_RED;
         }
 
         EndDrawing();
