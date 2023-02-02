@@ -21,26 +21,25 @@ enum HexTroopState {
     HTS_OCCUPIED
 };
 
+#define COLOR_EMPTY (Color) {0, 0, 0, 25}
+#define COLOR_HCS_PLAYERCLAIM (Color) {0, 67, 255, 180}
+#define COLOR_HCS_ENEMYCLAIM (Color) {255, 0, 0, 180}
+
+#define COLOR_HFS_MOUNTAIN (Color) {169, 169, 169, 180}
+#define COLOR_HFS_VILLAGE (Color) {217, 167, 26, 180}
+
 struct Hex{
-    
-    
     int q = 0, r = 0, s = 0;
 
     Vector3 index = (Vector3) {q, r, s};
-    //Hex* adjacents;
 
-    //int radius = 50;
-    Color color = (Color) {55, 107, 186, 255};
+    Color color = COLOR_EMPTY;
 
-    //HexClaimState claimState = HCS_UNCLAIMED;
-    //HexFeatureState featureState = HFS_EMPTY;
-    //HexTroopState troopState = HTS_EMPTY;
+    HexClaimState claimState = HCS_UNCLAIMED;
+    HexFeatureState featureState = HFS_EMPTY;
+    HexTroopState troopState = HTS_EMPTY;
 
-    //Hex(int q_, int r_, int s_) {
-        // this->index.x = q;
-        // this->index.y = r;
-        // this->index.z = s;
-    //}
+    bool isHoverOver = false;
 
     Hex(Vector3 index_): index(index_) {}
 
@@ -52,9 +51,23 @@ struct Hex{
     
     Hex(int q_, int r_, int s_): q(q_), r(r_), s(s_) {}
 
-    //Hex(Vector3 index_): index(index_) {}
-
     Hex() {}
+
+    Color getColor() {
+        if (claimState == HCS_PLAYERCLAIM) {
+            return COLOR_HCS_PLAYERCLAIM;
+        }
+        else if (claimState == HCS_ENEMYCLAIM) {
+            return COLOR_HCS_ENEMYCLAIM;
+        }
+        else {
+            return COLOR_EMPTY;
+        }
+    }
+
+    bool isEqual(Hex& rhs) {
+        return Vector3Equals(this->index, rhs.index);
+    }
 
     int hexLength(Hex hex) {
         return int((abs(hex.index.x) + abs(hex.index.y) + abs(hex.index.z)));

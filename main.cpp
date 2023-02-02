@@ -29,16 +29,49 @@ Vector2 hexToDrawPosition(Hex hex, Vector2 offset) {
 }
 
 
+void mapRhombus(Board board) {
+    // Fuck it. Doing rhombus map instead of hexagonal map
+    for (int r = 0; r < board.N; r++) {
+        for (int q = 0; q < board.N; q++) {
+            int s = (q * -1) - r;
+
+            board.hexBoard[r][q] = Hex(q, r, s);
+            //printf("(%d, %d, %d)\n", q, r, s);
+            
+        }
+    }
+}
+
 
 void drawBoardRhombus(Board board) {
     for (int r = 0; r < board.N; r++) {
         for (int q = 0; q < board.N; q++) {
             DrawPoly(hexToDrawPosition(board.hexBoard[r][q], (Vector2) {100, 100}), 6, 50, 0, board.hexBoard[r][q].color);
             DrawPolyLines(hexToDrawPosition(board.hexBoard[r][q], (Vector2) {100, 100}), 6, 50, 0, COLOR_BLACK);
-            DrawCircleLines(hexToDrawPosition(board.hexBoard[r][q], (Vector2) {100, 100}).x, hexToDrawPosition(board.hexBoard[r][q], (Vector2) {100, 100}).y, (cos(PI/6) * 50), COLOR_WHITE);
+            //DrawCircleLines(hexToDrawPosition(board.hexBoard[r][q], (Vector2) {100, 100}).x, hexToDrawPosition(board.hexBoard[r][q], (Vector2) {100, 100}).y, (cos(PI/6) * 50), COLOR_WHITE);
         }
     }
 }
+
+void changeColor(Hex& hex, Color color) {
+    hex.color = color;
+}
+
+void hoverOnHex(Board& board, Vector2 currentHex) {
+    Vector2 target = board.getHexFromPixel(GetMousePosition(), (Vector2) {100, 100});
+
+    int y = (int)round(target.y);
+    int x = (int)round(target.x);
+
+    Hex& targetHex = board.hexBoard[y][x];
+
+    targetHex.isHoverOver = true;
+    if (targetHex.isHoverOver) {
+        changeColor(targetHex, (Color) {targetHex.color.r, targetHex.color.g, targetHex.color.b, targetHex.color.a + 50});
+    }
+}
+
+
 
 int main () {
     /*
@@ -50,11 +83,8 @@ int main () {
     SetTargetFPS(60);
 
     Board board = Board();
-    Layout layout = Layout(layoutPointy, (Vector2) {10, 10}, (Vector2) {100, 100});
+    //Layout layout = Layout(layoutPointy, (Vector2) {10, 10}, (Vector2) {100, 100});
 
-
-
-    // Fuck it. Doing rhombus map instead of hexagonal map
     for (int r = 0; r < board.N; r++) {
         for (int q = 0; q < board.N; q++) {
             int s = (q * -1) - r;
@@ -64,29 +94,83 @@ int main () {
             
         }
     }
-
-    //printf("%d, %d\n", board.hexToPixel(layout, board.hexBoard[0][0]).x, board.hexToPixel(layout, board.hexBoard[0][0]).y);
     
-    //Vector2 p;
-    //board.pixelToHex(layout, (Vector2) {100, 100});
+    Vector2 prevHover;
 
-    //printf("Hex: %d, %d", p.x, p.y);
-
-    // TODO: Create colliders on hexes, have an invisible object follow mouse, on click and collision, do stuff
+    board.addFeatures(10, 5);
 
     while (WindowShouldClose() == false) {
         BeginDrawing();
 
         ClearBackground(COLOR_WHITE);
+
         drawBoardRhombus(board);
+        
+        
+
+        Vector2 currentHover = board.getHexFromPixel(GetMousePosition(), (Vector2) {100, 100});
+        Hex& currentHex = board.hexBoard[(int)round(currentHover.y)][(int)round(currentHover.x)];
+
+        board.updateColor(currentHex);
+
+        if (Vector2Equals(currentHover, prevHover) == 0) {
+            hoverOnHex(board, currentHover);
+            Hex& prevHex = board.hexBoard[(int)round(prevHover.y)][(int)round(prevHover.x)];
+            changeColor(prevHex, prevHex.getColor());
+            prevHover = currentHover;
+        }
 
         if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT)) {
-            
             Vector2 target = board.getHexFromPixel(GetMousePosition(), (Vector2) {100, 100});
-            cout << target.x << ", " << target.y << endl;
+            //cout << target.x << ", " << target.y << endl;
 
-            board.hexBoard[(int)round(target.y)][(int)round(target.x)].color = COLOR_RED;
+            Hex& currentHex = board.hexBoard[(int)round(target.y)][(int)round(target.x)];
+            currentHex.claimState = HCS_PLAYERCLAIM;
+
+            int y = (int)round(target.y);
+            int x = (int)round(target.x);
+
+
+
+            // changeColor(currentHex, BLACK);
+            // Hex t = board.getHexFromPixel2(&board, (Vector2) {100, 100});
+            // changeColor(t, YELLOW);
         }
+
+        //if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT)) {
+        if (IsMouseButtonUp(MOUSE_BUTTON_LEFT)) {    
+            Vector2 target = board.getHexFromPixel(GetMousePosition(), (Vector2) {100, 100});
+            //cout << target.x << ", " << target.y << endl;
+
+            int y = (int)round(target.y);
+            int x = (int)round(target.x);
+
+
+
+            // if (!board.hexBoard[y][x].isHoverOver) {
+            //     board.hexBoard[y][x].isHoverOver = true;
+            //     board.hexBoard[y][x].color = (Color) {0, 121, 241, 25};
+            // }
+            // else {
+            //     board.hexBoard[y][x].isHoverOver = false;
+            //     board.hexBoard[y][x].color = COLOR_BLUE;
+            // }
+
+            
+            //board.hexBoard[y][x].isHoverOver = true;
+
+            // cout << board.hexBoard[y][x].hexNeighbor(1).q << " " << board.hexBoard[y][x].hexNeighbor(1).q << endl;
+
+            // int adj_x = board.hexBoard[y][x].hexNeighbor(1).q;
+            // int adj_y = board.hexBoard[y][x].hexNeighbor(1).r;
+
+            // board.hexBoard[adj_y][adj_x].color = COLOR_GREEN;
+        }
+
+
+
+        //board.hexBoard[y][x].color = (Color) {0, 121, 241, 25};
+
 
         EndDrawing();
     }
