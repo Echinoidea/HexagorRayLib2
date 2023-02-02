@@ -6,17 +6,7 @@
 
 using namespace std;
 
-#define WIDTH 1500
-#define HEIGHT 980
-#define TITLE "HexGrid"
 
-#define HEX_RADIUS 30
-
-#define COLOR_BLACK (Color) {19, 19, 19, 255}
-#define COLOR_WHITE (Color) {236, 236, 236, 255}
-#define COLOR_RED (Color) {229, 78, 48, 255}
-#define COLOR_GREEN (Color) {100, 160, 60, 255}
-#define COLOR_BLUE (Color) {55, 107, 186, 255}
 
 Vector2 hexToDrawPosition(Hex hex, Vector2 offset) {
     float horizontalOffset = (sin(PI/3) * HEX_RADIUS);
@@ -31,8 +21,8 @@ Vector2 hexToDrawPosition(Hex hex, Vector2 offset) {
 
 void mapRhombus(Board board) {
     // Fuck it. Doing rhombus map instead of hexagonal map
-    for (int r = 0; r < board.N; r++) {
-        for (int q = 0; q < board.N; q++) {
+    for (int r = 0; r < N; r++) {
+        for (int q = 0; q < N; q++) {
             int s = (q * -1) - r;
 
             board.hexBoard[r][q] = Hex(q, r, s);
@@ -76,8 +66,8 @@ Texture2D getTexture(Hex hex) {
 
 
 void drawBoardRhombus(Board board) {
-    for (int r = 0; r < board.N; r++) {
-        for (int q = 0; q < board.N; q++) {
+    for (int r = 0; r < N; r++) {
+        for (int q = 0; q < N; q++) {
             Hex hex = board.hexBoard[r][q];
             Vector2 hexPosition = hexToDrawPosition(hex, (Vector2) {100, 100});
             DrawPoly(hexPosition, 6, HEX_RADIUS, 0, hex.color);
@@ -110,10 +100,6 @@ void hoverOnHex(Board& board, Vector2 target) {
 
 
 int main () {
-    /*
-    //Board board = Board();
-    board.fillBoard();
-    board.addFeatures(5, 5); */
 
     InitWindow(WIDTH, HEIGHT, "Hexes");
     SetTargetFPS(60);
@@ -121,10 +107,9 @@ int main () {
     LoadImages();
 
     Board board = Board();
-    //Layout layout = Layout(layoutPointy, (Vector2) {10, 10}, (Vector2) {100, 100});
 
-    for (int r = 0; r < board.N; r++) {
-        for (int q = 0; q < board.N; q++) {
+    for (int r = 0; r < N; r++) {
+        for (int q = 0; q < N; q++) {
             int s = (q * -1) - r;
 
             board.hexBoard[r][q] = Hex(q, r, s);
@@ -167,12 +152,6 @@ int main () {
 
             int y = (int)round(target.y);
             int x = (int)round(target.x);
-
-
-
-            // changeColor(currentHex, BLACK);
-            // Hex t = board.getHexFromPixel2(&board, (Vector2) {100, 100});
-            // changeColor(t, YELLOW);
         }
 
         //if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT)) {
@@ -182,33 +161,7 @@ int main () {
 
             int y = (int)round(target.y);
             int x = (int)round(target.x);
-
-
-
-            // if (!board.hexBoard[y][x].isHoverOver) {
-            //     board.hexBoard[y][x].isHoverOver = true;
-            //     board.hexBoard[y][x].color = (Color) {0, 121, 241, 25};
-            // }
-            // else {
-            //     board.hexBoard[y][x].isHoverOver = false;
-            //     board.hexBoard[y][x].color = COLOR_BLUE;
-            // }
-
-            
-            //board.hexBoard[y][x].isHoverOver = true;
-
-            // cout << board.hexBoard[y][x].hexNeighbor(1).q << " " << board.hexBoard[y][x].hexNeighbor(1).q << endl;
-
-            // int adj_x = board.hexBoard[y][x].hexNeighbor(1).q;
-            // int adj_y = board.hexBoard[y][x].hexNeighbor(1).r;
-
-            // board.hexBoard[adj_y][adj_x].color = COLOR_GREEN;
         }
-
-
-
-        //board.hexBoard[y][x].color = (Color) {0, 121, 241, 25};
-
 
         EndDrawing();
     }
@@ -219,17 +172,3 @@ int main () {
 
     return 0;
 }
-/**
- * if (r % 2 != 0) {
-                    DrawPoly((Vector2) {originVector.x + (q * 150), originVector.y + r * verticalOffset}, 
-                    6, hexRadius, 30, COLOR_BLUE);
-                    DrawPolyLines((Vector2) {originVector.x + (q * 150), originVector.y + r * verticalOffset}, 
-                    6, hexRadius, 30, COLOR_BLACK);
-                }
-                else {
-                    DrawPoly((Vector2) {originVector.x + 75 + (q * 150), originVector.y + r * verticalOffset}, 
-                    6, hexRadius, 30, COLOR_BLUE);
-                    DrawPolyLines((Vector2) {originVector.x + 75 + (q * 150), originVector.y + r * verticalOffset}, 
-                    6, hexRadius, 30, COLOR_BLACK);
-                }
-*/

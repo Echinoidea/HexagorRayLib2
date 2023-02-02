@@ -1,19 +1,12 @@
 #include <iostream>
 #include <Hex.cpp>
-#include <Layout.cpp>
 #include <vector>
 #include <raylib.h>
 #include <math.h>
 
-#define HEX_RADIUS 30
-
-#define COLOR_HFS_EMPTY = BLUE
-#define COLOR_HFS_MOUNTAIN (Color) {169, 169, 169, 180}
-#define COLOR_HFS_VILLAGE (Color) {217, 167, 26, 180}
-
 struct Board {
 
-    const static int N = 18;
+    
 
     int mountainCount = 0;
     int villageCount = 0;
