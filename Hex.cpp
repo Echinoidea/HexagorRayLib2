@@ -35,13 +35,16 @@ struct Hex{
 
     Color color = COLOR_EMPTY;
 
+    Texture2D hexTexture;
+
     HexClaimState claimState = HCS_UNCLAIMED;
     HexFeatureState featureState = HFS_EMPTY;
     HexTroopState troopState = HTS_EMPTY;
 
     bool isHoverOver = false;
 
-    Hex(Vector3 index_): index(index_) {}
+    Hex(Vector3 index_): index(index_) {
+    }
 
     Hex(Vector2 index_) {
         this->index.x = index_.x;
@@ -49,9 +52,12 @@ struct Hex{
         this->index.z = (index_.x * -1) - index_.y;
     }
     
-    Hex(int q_, int r_, int s_): q(q_), r(r_), s(s_) {}
+    Hex(int q_, int r_, int s_): q(q_), r(r_), s(s_) {
+    }
 
     Hex() {}
+
+    
 
     Color getColor() {
         if (claimState == HCS_PLAYERCLAIM) {
@@ -64,6 +70,8 @@ struct Hex{
             return COLOR_EMPTY;
         }
     }
+
+    
 
     bool isEqual(Hex& rhs) {
         return Vector3Equals(this->index, rhs.index);

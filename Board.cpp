@@ -5,7 +5,7 @@
 #include <raylib.h>
 #include <math.h>
 
-#define HEX_RADIUS 50
+#define HEX_RADIUS 30
 
 #define COLOR_HFS_EMPTY = BLUE
 #define COLOR_HFS_MOUNTAIN (Color) {169, 169, 169, 180}
@@ -13,7 +13,7 @@
 
 struct Board {
 
-    const static int N = 11;
+    const static int N = 18;
 
     int mountainCount = 0;
     int villageCount = 0;
@@ -31,14 +31,14 @@ struct Board {
             if (mOrV == 0 && mountainCount < mountainCount_ && hexBoard[rr][rq].featureState == HFS_EMPTY) {
                 hexBoard[rr][rq].featureState = HFS_MOUNTAIN;
                 mountainCount++;
-                hexBoard[rr][rq].color = hexBoard[rr][rq].getColor();
+                //hexBoard[rr][rq].color = hexBoard[rr][rq].getColor();
                 printf("Created new mountain at %d, %d\n", rr, rq);
             }
 
             if (mOrV == 1 && villageCount < villageCount_ && hexBoard[rr][rq].featureState == HFS_EMPTY) {
                 hexBoard[rr][rq].featureState = HFS_VILLAGE;
                 villageCount++;
-                hexBoard[rr][rq].color = COLOR_HFS_VILLAGE;
+                //hexBoard[rr][rq].color = COLOR_HFS_VILLAGE;
                 printf("Created new village at %d, %d\n", rr, rq);
             }
         }
@@ -54,6 +54,14 @@ struct Board {
         }
     }
 
+    void updateTextures() {
+        for (int r = 0; r < N; r++) {
+            for (int q = 0; q < N; q++) {
+                hexBoard[q][r].hexTexture = hexBoard[q][r].hexTexture;
+            }
+        }
+    }
+
     float calcDistance(Vector2 a, Vector2 b) {
         return sqrt(pow((b.x - a.x), 2) + pow((b.y - a.y), 2));
     }
@@ -61,7 +69,7 @@ struct Board {
     Hex getHexFromPixel2(Board* board, Vector2 offset) {
         Vector2 mousePosition = GetMousePosition();
 
-        float horizontalOffset = (sin(PI/3) * 50);
+        float horizontalOffset = (sin(PI/3) * HEX_RADIUS);
         int verticalOffset = 75;
 
         std::vector<Vector2> circles;
@@ -75,7 +83,7 @@ struct Board {
             }
         }
 
-        std::cout << "Click position: " << mousePosition.x << ", " << mousePosition.y << std::endl;
+        // std::cout << "Click position: " << mousePosition.x << ", " << mousePosition.y << std::endl;
 
         Vector2 closestCircle;
 
@@ -112,8 +120,8 @@ struct Board {
     Vector2 getHexFromPixel(Vector2 point, Vector2 offset) {
         Vector2 mousePosition = GetMousePosition();
 
-        float horizontalOffset = (sin(PI/3) * 50);
-        int verticalOffset = 75;
+        float horizontalOffset = (sin(PI/3) * HEX_RADIUS);
+        int verticalOffset = HEX_RADIUS + (HEX_RADIUS / 2);
 
         std::vector<Vector2> circles;
 
@@ -126,7 +134,7 @@ struct Board {
             }
         }
 
-        std::cout << "Click position: " << mousePosition.x << ", " << mousePosition.y << std::endl;
+        // std::cout << "Click position: " << mousePosition.x << ", " << mousePosition.y << std::endl;
 
         Vector2 closestCircle;
 
@@ -148,7 +156,7 @@ struct Board {
             }
         }
         
-        std::cout << "Closest circle: " << (int)round(closestCircle.x) << ", " << (int)round(closestCircle.y) << std::endl;
+        // std::cout << "Closest circle: " << (int)round(closestCircle.x) << ", " << (int)round(closestCircle.y) << std::endl;
 
         /*
         .x = offset.x + (horizontalOffset * hex.r) + (float)(hex.q) * (horizontalOffset * 2), //(cos(PI/6) * 100),
