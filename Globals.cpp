@@ -2,8 +2,8 @@
 #define HEIGHT 980
 #define TITLE "HexGrid"
 
-#define HEX_RADIUS 30
-#define N 18
+#define HEX_RADIUS 35
+#define N 14
 
 #define COLOR_BLACK (Color) {19, 19, 19, 255}
 #define COLOR_WHITE (Color) {236, 236, 236, 255}

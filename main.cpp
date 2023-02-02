@@ -6,7 +6,8 @@
 
 using namespace std;
 
-
+// Can't create a global variable for this without causing hovering bugs for some reason.
+//Vector2 (Vector2) {100, 100}; 
 
 Vector2 hexToDrawPosition(Hex hex, Vector2 offset) {
     float horizontalOffset = (sin(PI/3) * HEX_RADIUS);
@@ -32,6 +33,7 @@ void mapRhombus(Board board) {
     }
 }
 
+
 Image sources[2]; 
 Texture2D textures[3];
 
@@ -39,13 +41,16 @@ void LoadImages() {
     sources[0] = LoadImage(".\\assets\\mountains.png");
     sources[1] = LoadImage(".\\assets\\village.png");
 
-    ImageResize(&sources[0], HEX_RADIUS - (HEX_RADIUS / 3), HEX_RADIUS - (HEX_RADIUS / 3));
-    ImageResize(&sources[1], HEX_RADIUS - (HEX_RADIUS / 3), HEX_RADIUS - (HEX_RADIUS / 3));
+    int resizeFactor = 4;
+
+    ImageResize(&sources[0], HEX_RADIUS - (HEX_RADIUS / resizeFactor), HEX_RADIUS - (HEX_RADIUS / resizeFactor));
+    ImageResize(&sources[1], HEX_RADIUS - (HEX_RADIUS / resizeFactor), HEX_RADIUS - (HEX_RADIUS / resizeFactor));
 
     textures[0] = LoadTexture(NULL);
     textures[1] = LoadTextureFromImage(sources[0]);
     textures[2] = LoadTextureFromImage(sources[1]);
 }
+
 
 Texture2D getTexture(Hex hex) {
     Image src;
@@ -74,14 +79,16 @@ void drawBoardRhombus(Board board) {
             DrawPolyLines(hexPosition, 6, HEX_RADIUS, 0, COLOR_BLACK);
             //DrawCircleLines(hexToDrawPosition(board.hexBoard[r][q], (Vector2) {100, 100}).x, hexToDrawPosition(board.hexBoard[r][q], (Vector2) {100, 100}).y, (cos(PI/6) * 50), COLOR_WHITE);
             hex.hexTexture = getTexture(hex);
-            DrawTexture(hex.hexTexture, hexPosition.x, hexPosition.y, COLOR_BLUE);
+            DrawTexture(hex.hexTexture, hexPosition.x - (HEX_RADIUS / 4), hexPosition.y - (HEX_RADIUS / 4), COLOR_BLUE);
         }
     }
 }
 
+
 void changeColor(Hex& hex, Color color) {
     hex.color = color;
 }
+
 
 void hoverOnHex(Board& board, Vector2 target) {
     //Vector2 target = board.getHexFromPixel(GetMousePosition(), (Vector2) {100, 100});
@@ -96,7 +103,6 @@ void hoverOnHex(Board& board, Vector2 target) {
         changeColor(targetHex, (Color) {targetHex.color.r, targetHex.color.g, targetHex.color.b, targetHex.color.a + 50});
     }
 }
-
 
 
 int main () {
@@ -120,7 +126,7 @@ int main () {
     
     Vector2 prevHover;
 
-    board.addFeatures(10, 5);
+    board.addFeatures(50, 20);
 
     
     Vector2 currentHover = (Vector2) {120, 120};
@@ -145,19 +151,9 @@ int main () {
 
         if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT)) {
             Vector2 target = board.getHexFromPixel(GetMousePosition(), (Vector2) {100, 100});
-            //cout << target.x << ", " << target.y << endl;
 
             Hex& currentHex = board.hexBoard[(int)round(target.y)][(int)round(target.x)];
             currentHex.claimState = HCS_PLAYERCLAIM;
-
-            int y = (int)round(target.y);
-            int x = (int)round(target.x);
-        }
-
-        //if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT)) {
-        if (IsMouseButtonUp(MOUSE_BUTTON_LEFT)) {    
-            Vector2 target = board.getHexFromPixel(GetMousePosition(), (Vector2) {100, 100});
-            //cout << target.x << ", " << target.y << endl;
 
             int y = (int)round(target.y);
             int x = (int)round(target.x);
