@@ -53,7 +53,6 @@ void LoadImages() {
 
 
 Texture2D getTexture(Hex hex) {
-    Image src;
     Texture2D tx;
 
     if (hex.featureState == HFS_MOUNTAIN) {
@@ -140,7 +139,7 @@ int main () {
         
         
         currentHover = board.getHexFromPixel(GetMousePosition(), (Vector2) {100, 100});
-        Hex& currentHex = board.hexBoard[(int)round(currentHover.y)][(int)round(currentHover.x)];
+        /* Hex& currentHex = board.hexBoard[(int)round(currentHover.y)][(int)round(currentHover.x)];*/
 
         if (Vector2Equals(currentHover, prevHover) == 0) {
             hoverOnHex(board,  currentHover);
@@ -155,8 +154,6 @@ int main () {
             Hex& currentHex = board.hexBoard[(int)round(target.y)][(int)round(target.x)];
             currentHex.claimState = HCS_PLAYERCLAIM;
 
-            int y = (int)round(target.y);
-            int x = (int)round(target.x);
         }
 
         EndDrawing();
