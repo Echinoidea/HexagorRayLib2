@@ -3,6 +3,7 @@
 #include <vector>
 #include <raymath.h>
 #include <assert.h>
+#include <Globals.cpp>
 
 enum HexClaimState {
     HCS_UNCLAIMED,
@@ -21,12 +22,6 @@ enum HexTroopState {
     HTS_OCCUPIED
 };
 
-#define COLOR_EMPTY (Color) {0, 0, 0, 25}
-#define COLOR_HCS_PLAYERCLAIM (Color) {0, 67, 255, 180}
-#define COLOR_HCS_ENEMYCLAIM (Color) {255, 0, 0, 180}
-
-#define COLOR_HFS_MOUNTAIN (Color) {169, 169, 169, 180}
-#define COLOR_HFS_VILLAGE (Color) {217, 167, 26, 180}
 
 struct Hex{
     int q = 0, r = 0, s = 0;
@@ -35,13 +30,17 @@ struct Hex{
 
     Color color = COLOR_EMPTY;
 
+    Texture2D hexTexture;
+
     HexClaimState claimState = HCS_UNCLAIMED;
     HexFeatureState featureState = HFS_EMPTY;
     HexTroopState troopState = HTS_EMPTY;
 
     bool isHoverOver = false;
 
-    Hex(Vector3 index_): index(index_) {}
+    Hex(Vector3 index_): index(index_) {
+    }
+
 
     Hex(Vector2 index_) {
         this->index.x = index_.x;
@@ -49,9 +48,14 @@ struct Hex{
         this->index.z = (index_.x * -1) - index_.y;
     }
     
-    Hex(int q_, int r_, int s_): q(q_), r(r_), s(s_) {}
+
+    Hex(int q_, int r_, int s_): q(q_), r(r_), s(s_) {
+    }
+
 
     Hex() {}
+
+    
 
     Color getColor() {
         if (claimState == HCS_PLAYERCLAIM) {
@@ -65,39 +69,39 @@ struct Hex{
         }
     }
 
+    
     bool isEqual(Hex& rhs) {
         return Vector3Equals(this->index, rhs.index);
     }
+
 
     int hexLength(Hex hex) {
         return int((abs(hex.index.x) + abs(hex.index.y) + abs(hex.index.z)));
     }
 
+
     int hexDistance(Hex targetHex) {
         return hexLength(hexSubtract(targetHex));
     }
+
 
     Hex hexAdd(Hex b) {
         //return Hex((Vector3) {this->index.x + b.index.x, this->index.y + b.index.y, this->index.z + b.index.z});
         return Hex(this->index.x + b.index.x, this->index.y + b.index.y, this->index.z + b.index.z);
     }
 
+
     Hex hexSubtract(Hex b) {
         //return Hex((Vector3) {this->index.x - b.index.x, this->index.y - b.index.y, this->index.z - b.index.z});
         return Hex(this->index.x - b.index.x, this->index.y - b.index.y, this->index.z - b.index.z);
     }
+
 
     Hex hexMultiply(int k) {
         // return Hex((Vector3) {this->index.x * k, this->index.y * k, this->index.z * k});
         return Hex(this->index.x * k, this->index.y * k, this->index.z * k);
     }
 
-    /**std::vector<Hex> hexDirections = {
-        //Hex((Vector3) {1, 0, -1}), Hex((Vector3) {1, -1, 0}), Hex((Vector3) {0, -1, 1}),
-        //Hex((Vector3) {-1, 0, 1}), Hex((Vector3) {-1, 1, 0}), Hex((Vector3) {0, 1, -1})
-        Hex(1, 0, -1), Hex(1, -1, 0), Hex(0, -1, 1),
-        Hex(-1, 0, 1), Hex(-1, 1, 0), Hex(0, 1, -1)
-    };*/
 
     std::vector<Hex> getHexDirections() {
         std::vector<Hex> directions; 
@@ -112,12 +116,14 @@ struct Hex{
         return directions;
     }
 
+
     /// @brief Get the hex adjacent to this hex in 'direction'
     /// @param direction number between 0 and 5
     Hex hexDirection(int direction) {
         assert(0 <= direction && direction < 6);
         return getHexDirections()[direction];
     }
+    
 
     Hex hexNeighbor(int direction) {
         return hexAdd(hexDirection(direction));
